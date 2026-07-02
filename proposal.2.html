@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Will You Marry Me?</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: "Segoe UI", sans-serif;
+      background: #f7cfe3; /* pastel pink */
+      color: white;
+      text-align: center;
+      overflow: hidden;
+      cursor: url('https://cdn-icons-png.flaticon.com/512/833/833472.png'), auto; /* heart cursor */
+    }
+
+    /* Soft pink fog */
+    .fog {
+      position: fixed;
+      width: 200vw;
+      height: 200vh;
+      background: radial-gradient(circle, rgba(255,182,193,0.3), rgba(255,182,193,0));
+      animation: fogMove 20s infinite alternate ease-in-out;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes fogMove {
+      0% { transform: translate(-20vw, -20vh); }
+      100% { transform: translate(20vw, 20vh); }
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: fadeIn 2s ease;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      animation: fadeIn 2.5s ease;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background: #f4a9c4; /* light pink */
+      color: white;
+      transition: transform 0.2s ease;
+    }
+
+    /* Glowing YES button */
+    #yesBtn {
+      box-shadow: 0 0 20px #ffb6d9, 0 0 40px #ffb6d9;
+      animation: glowPulse 2s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 15px #ffb6d9; }
+      100% { box-shadow: 0 0 35px #ffb6d9; }
+    }
+
+    #noBtn:hover {
+      transform: translateX(-60px);
+    }
+
+    #certificate {
+      margin-top: 2rem;
+      padding: 2rem;
+      background: rgba(255,255,255,0.25);
+      border-radius: 20px;
+      width: 80%;
+      max-width: 500px;
+      display: none;
+      font-size: 1.3rem;
+      animation: fadeIn 1.5s ease;
+      border: 3px solid white;
+      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: absolute;
+      color: white;
+      font-size: 2rem;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 0.7; }
+      100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Confetti hearts */
+    .confetti {
+      position: fixed;
+      font-size: 2rem;
+      animation: confettiFall 3s linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Cute YES explosion */
+    .explosion-heart {
+      position: absolute;
+      font-size: 2rem;
+      color: #ffb6d9;
+      animation: explode 1s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(0.2); opacity: 1; }
+      100% { transform: scale(2.5) translateY(-50px); opacity: 0; }
+    }
+
+    /* Sparkle trail */
+    .sparkle {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkleFade 1s forwards;
+      box-shadow: 0 0 10px white;
+    }
+
+    @keyframes sparkleFade {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="fog"></div>
+
+  <!-- Calm jazz music -->
+  <audio autoplay loop>
+    <source src="https://files.catbox.moe/8z6m9p.mp3" type="audio/mp3">
+  </audio>
+
+  <h1>Will you marry me?</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
+  </div>
+
+  <div id="certificate">
+    <h2>💍 Marriage Certificate 💍</h2>
+
+    <p>
+      This certifies that  
+      <span id="name1" style="font-weight:bold;"></span>  
+      and  
+      <span id="name2" style="font-weight:bold;"></span>  
+      are officially bound by love forever.
+    </p>
+
+    <p>Signed: Your future spouse ❤️</p>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const certificate = document.getElementById("certificate");
+
+    let yesScale = 1;
+
+    function askNames() {
+      const person1 = prompt("Enter your name:");
+      const person2 = prompt("Enter their name:");
+
+      document.getElementById("name1").textContent = person1 || "Partner 1";
+      document.getElementById("name2").textContent = person2 || "Partner 2";
+    }
+
+    yesBtn.addEventListener("click", () => {
+      if (yesScale < 4) {
+        yesScale += 0.5;
+        yesBtn.style.transform = `scale(${yesScale})`;
+
+        cuteExplosion();
+      }
+
+      if (yesScale >= 4) {
+        certificate.style.display = "block";
+        yesBtn.style.display = "none";  /* Hides YES button */
+        askNames();
+        launchConfetti();
+      }
+    });
+
+    noBtn.addEventListener("click", () => {
+      alert("No is not an option… try again 💗");
+    });
+
+    /* Floating hearts */
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.textContent = "💗";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.bottom = "-20px";
+      heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+      document.body.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 6000);
+    }
+
+    setInterval(createHeart, 500);
+
+    /* Cute YES explosion */
+    function cuteExplosion() {
+      for (let i = 0; i < 8; i++) {
+        const heart = document.createElement("div");
+        heart.classList.add("explosion-heart");
+        heart.textContent = "💗";
+
+        const rect = yesBtn.getBoundingClientRect();
+        heart.style.left = rect.left + rect.width / 2 + "px";
+        heart.style.top = rect.top + rect.height / 2 + "px";
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1000);
+      }
+    }
+
+    /* Confetti explosion */
+    function launchConfetti() {
+      for (let i = 0; i < 40; i++) {
+        const conf = document.createElement("div");
+        conf.classList.add("confetti");
+        conf.textContent = "💗";
+        conf.style.left = Math.random() * 100 + "vw";
+        conf.style.top = "-20px";
+        conf.style.animationDuration = (Math.random() * 2 + 2) + "s";
+        document.body.appendChild(conf);
+
+        setTimeout(() => conf.remove(), 3000);
+      }
+    }
+
+    /* Sparkle cursor trail */
+    document.addEventListener("mousemove", (e) => {
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+      sparkle.style.left = e.pageX + "px";
+      sparkle.style.top = e.pageY + "px";
+      document.body.appendChild(sparkle);
+
+      setTimeout(() => sparkle.remove(), 1000);
+    });
+  </script>
+
+</body>
+</html>
